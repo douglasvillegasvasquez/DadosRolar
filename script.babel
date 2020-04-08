@@ -1,0 +1,176 @@
+class Jogo extends React.Component {
+  constructor (props){
+    super (props);
+    this.state = {
+      apostas: [
+        {
+          dados: Array(2),
+          somaApostada: '',
+          acertou: false
+        }
+      ],
+      jogada: 0
+    };
+    
+    this.handleChange = this.handleChange.bind(this);
+  }
+  
+  renderizarDado (valor){
+    return (
+      <input type='text' readOnly
+      value={valor}
+      />
+    );
+  }
+  
+  handleChange(event) {
+    const apostas = this.state.apostas;
+    apostas[this.state.jogada].somaApostada = event.target.value;
+    
+    this.setState({
+      apostas: apostas
+    });
+  }
+  
+  handleClick(i){
+    const quadrado1 = Math.floor(Math.random() * 7);
+    const quadrado2 = Math.floor(Math.random() * 7);
+    const aposta = this.state.apostas[i].somaApostada;
+    
+    this.state.apostas[i].dados = {quadrado1, quadrado2};
+    if(aposta == ''){
+      this.state.apostas[i].acertou = false;
+    }
+    else{
+      this.state.apostas[i].acertou = (quadrado1 + quadrado2) == aposta;
+    }
+    
+    this.setState({
+      apostas: this.state.apostas.concat([{
+        dados: Array(2),
+        somaApostada: aposta,
+        acertou: false
+      }]),
+      jogada: this.state.jogada + 1
+    });
+  }
+  
+  reiniciar(){
+    this.setState({
+      apostas: [
+        {
+          dados: Array(2),
+          somaApostada: '',
+          acertou: false
+        }
+      ],
+      jogada: 0
+    });
+  }
+  
+  carregarTotais(apostas){
+    let correto = 0;
+    let errado = 0;
+    
+    for(let i = 0; i < apostas.length; i++){
+      if(apostas[i].dados.quadrado1 >= 0 && apostas[i].dados.quadrado2 >= 0){
+        if(apostas[i].acertou){
+          correto++;
+        }
+        else{
+          errado++;
+        }
+      }
+    }
+    
+    return (
+      <tr>
+        <td>{correto}</td>
+        <td>{errado}</td>
+      </tr>
+    );
+  }
+  
+  render () {
+    const apostas = this.state.apostas;
+    let jogada;
+    let somaAtual;
+    
+    if(this.state.jogada === 0){
+      jogada = apostas[this.state.jogada];
+      somaAtual = jogada.somaApostada;
+    }
+    else{
+      jogada = apostas[this.state.jogada - 1];
+      somaAtual = apostas[this.state.jogada].somaApostada;
+    }
+    
+    const jogadas = apostas.map((value, jogada) => {
+      if(value.dados.quadrado1 >= 0 && value.dados.quadrado2 >= 0){
+        return (
+          <tr key={jogada}>
+            <td>{value.dados.quadrado1}</td>
+            <td>{value.dados.quadrado2}</td>
+            <td>{value.acertou ? 'Correto' : 'Errado'}</td>
+          </tr>
+        );
+      }
+    });
+    
+    let status;
+    
+    if(this.state.jogada === 0){
+      status = 'Faça uma aposta!';
+    }
+    else if (jogada.acertou){
+      status = 'Acertou!';
+    }
+    else{
+      status = 'Errou!';
+    }
+    
+    return (
+    <div className="game">
+        <button className="btn btn-light game-button" onClick={() => this.reiniciar()}>Novo Jogo</button>      <div className="board-row">
+        {this.renderizarDado(jogada.dados.quadrado1)}
+        {this.renderizarDado (jogada.dados.quadrado2)}
+      </div>
+      <div>{status}</div>
+      <div>
+        <input type="number" className="inputNumber" min={0} max={12} value={somaAtual} onChange={this.handleChange} placeholder="Soma dos quadrados" />
+      </div>
+      <div>
+        <button className="btn btn-primary game-button" onClick={() => this.handleClick(this.state.jogada)}>Apostar</button>
+
+      </div>
+      <div className="game-info">
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Correto</th>
+              <th>Errado</th>
+            </tr>
+          </thead>
+          <tbody>{this.carregarTotais(apostas)}</tbody>
+        </table>
+        <br />
+        <table className="table">
+          <thead>
+            <tr>
+              <th>1º Quadrado |</th>
+              <th>2º Quadrado |</th>
+              <th>Seu resultado</th>
+            </tr>
+          </thead>
+          <tbody>{jogadas}</tbody>
+        </table>
+      </div>
+    </div>
+    );
+  }
+}
+
+ReactDOM.render (
+  <Jogo />,
+  document.getElementById("root")
+);
