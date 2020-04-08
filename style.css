@@ -1,0 +1,44 @@
+.game {
+  text-align: center;
+}
+
+.game-info {
+  width: 450px;
+  display: inline-block;
+  background-color:#ebf0f2;
+}
+
+.board-row {
+  display: flex;
+  justify-content: center;
+}
+
+.board-row input {
+  width: 45px;
+  height: 45px;
+}
+
+.game-button {
+  margin: 5px;
+  font-size:15px;
+}
+
+.inputNumber{
+  width: 200px;
+}
+
+input{
+  border-style: groove;
+  text-align: center;
+  font-size:18px;
+}
+
+div{
+  padding: 4px
+}
+.table{
+  margin-left:65px;
+}
+th{
+  font-size:18px;
+}
